@@ -56,7 +56,7 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
     datagen = keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
 
     get_gen = lambda x: datagen.flow_from_directory(
-        'datasets/caltech_101/{}'.format(x),
+        '/itet-stor/himeva/net_scratch/resnet_data/{}'.format(x),
         target_size=(64, 64),
         batch_size=batch_size,
         class_mode='categorical'
@@ -74,9 +74,10 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
     else:
         # create model
         logging.info('creating model')
-        resnet50 = create_model(input_shape=(64, 64, 3), classes=101)
+        resnet50 = create_model(input_shape=(64, 64, 3), classes=2)
     
     optimizer = keras.optimizers.Adam(learning_rate)
+    #change these into more useful ometrics and losses
     resnet50.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     
     if print_summary:

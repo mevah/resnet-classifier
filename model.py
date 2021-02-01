@@ -7,7 +7,7 @@ initializer = keras.initializers.glorot_normal()
 """
 Creates Residual Network with 50 layers
 """
-def create_model(input_shape=(64, 64, 3), classes=102):
+def create_model(input_shape=(64, 64, 3), classes=2):
     # Define the input as a tensor with shape input_shape
     X_input = keras.layers.Input(input_shape)
 

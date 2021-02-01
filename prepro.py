@@ -9,8 +9,8 @@ import numpy as np
 import keras_applications
 
 from tqdm import tqdm
-
-resolution = 128
+#changed resolution from 128 to 320
+resolution = 320
 
 @click.command()
 @click.option(
