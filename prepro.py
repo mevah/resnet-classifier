@@ -82,14 +82,14 @@ def move_images(dataset_path):
     categories = os.listdir('{}/train'.format(dataset_path))
 
     for category in tqdm(categories, total=len(categories), desc='Moving Images'):
-        os.mkdir('{}/val/{}'.format(dataset_path, category))
+        #os.mkdir('{}/val/{}'.format(dataset_path, category))
         category_images = os.listdir('{}/train/{}'.format(dataset_path, category))
         random_val_images = np.random.choice(category_images, 20, replace=False)
         for image_path in random_val_images:
             os.rename('{}/train/{}/{}'.format(dataset_path, category, image_path),
                     '{}/val/{}/{}'.format(dataset_path, category, image_path))
 
-        os.mkdir('{}/test/{}'.format(dataset_path, category))
+        #os.mkdir('{}/test/{}'.format(dataset_path, category))
         category_images = os.listdir('{}/train/{}'.format(dataset_path, category))
         random_test_images = np.random.choice(category_images, 20, replace=False)
         for image_path in random_test_images:

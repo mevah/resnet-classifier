@@ -57,12 +57,11 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
         rescale=1./255, samplewise_center=True, samplewise_std_normalization=True)
 
     get_gen = lambda x: datagen.flow_from_directory(
-        '/itet-stor/himeva/net_scratch/fullres_data/fold1/{}'.format(x),
+        '/itet-stor/himeva/net_scratch/fullres_data/{}'.format(x),
         target_size=(320, 320),
         batch_size=batch_size,
         color_mode="grayscale",
         class_mode='binary'
-    #save_to_dir="/itet-stor/himeva/net_scratch/aug_images/{}".format(x)
     )
 
     # generator objects
@@ -101,8 +100,8 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
         callbacks=callbacks
     )
     # save model
-    logging.info('Saving trained model to `models/fold2resnet50.h5`')
-    resnet50.save('models/fold2resnet50.h5')
+    logging.info('Saving trained model to `models/fullres_resnet50.h5`')
+    resnet50.save('models/fullres_resnet50.h5')
 
     # evaluate model
     logging.info('evaluating model')
@@ -113,7 +112,7 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
     )
     logging.info('test loss: {:.4f} - test acc: {:.4f}'.format(preds[0], preds[1]))
 
-    keras.utils.plot_model(resnet50, to_file='models/fold2resnet50.png')
+    keras.utils.plot_model(resnet50, to_file='models/fullres_resnet50.png')
 
 """
 Configure Callbacks for Training
@@ -121,7 +120,7 @@ Configure Callbacks for Training
 def configure_callbacks(save_every=1, tensorboard_vis=False):
     # checkpoint models only when `val_loss` impoves
     saver = keras.callbacks.ModelCheckpoint(
-        'models/ckpts/fresmodel.ckpt',
+        'models/ckpts/fullres_model.ckpt',
         monitor='val_loss',
         save_best_only=True,
         period=save_every,

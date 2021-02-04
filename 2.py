@@ -13,11 +13,13 @@ K.set_image_data_format('channels_last')
 """
 Train Model [optional args]
 """
+
+
 @click.command(name='Training Configuration')
 @click.option(
-    '-lr', 
-    '--learning-rate', 
-    default=0.005, 
+    '-lr',
+    '--learning-rate',
+    default=0.005,
     help='Learning rate for minimizing loss during training'
 )
 @click.option(
@@ -27,9 +29,9 @@ Train Model [optional args]
     help='Batch size of minibatches to use during training'
 )
 @click.option(
-    '-ne', 
-    '--num-epochs', 
-    default=50, 
+    '-ne',
+    '--num-epochs',
+    default=50,
     help='Number of epochs for training model'
 )
 @click.option(
@@ -56,13 +58,12 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
     datagen = keras.preprocessing.image.ImageDataGenerator(
         rescale=1./255, samplewise_center=True, samplewise_std_normalization=True)
 
-    get_gen = lambda x: datagen.flow_from_directory(
-        '/itet-stor/himeva/net_scratch/fullres_data/fold1/{}'.format(x),
+    def get_gen(x): return datagen.flow_from_directory(
+        '/itet-stor/himeva/net_scratch/x2_data/{}'.format(x),
         target_size=(320, 320),
         batch_size=batch_size,
         color_mode="grayscale",
         class_mode='binary'
-    #save_to_dir="/itet-stor/himeva/net_scratch/aug_images/{}".format(x)
     )
 
     # generator objects
@@ -78,11 +79,12 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
         # create model
         logging.info('creating model')
         resnet50 = create_model(input_shape=(320, 320, 1), classes=1)
-    
+
     optimizer = keras.optimizers.Adam(learning_rate)
     #change these into more useful ometrics and losses
-    resnet50.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy', keras.metrics.Precision()])
-    
+    resnet50.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=[
+                     'accuracy', keras.metrics.Precision()])
+
     if print_summary:
         resnet50.summary()
 
@@ -101,8 +103,8 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
         callbacks=callbacks
     )
     # save model
-    logging.info('Saving trained model to `models/fold2resnet50.h5`')
-    resnet50.save('models/fold2resnet50.h5')
+    logging.info('Saving trained model to `models/x2_resnet50.h5`')
+    resnet50.save('models/x2_resnet50.h5')
 
     # evaluate model
     logging.info('evaluating model')
@@ -111,23 +113,27 @@ def train(learning_rate, batch_size, num_epochs, save_every, tensorboard_vis, pr
         steps=2200//batch_size,
         verbose=1
     )
-    logging.info('test loss: {:.4f} - test acc: {:.4f}'.format(preds[0], preds[1]))
+    logging.info(
+        'test loss: {:.4f} - test acc: {:.4f}'.format(preds[0], preds[1]))
 
-    keras.utils.plot_model(resnet50, to_file='models/fold2resnet50.png')
+    keras.utils.plot_model(resnet50, to_file='models/x2_resnet50.png')
+
 
 """
 Configure Callbacks for Training
 """
+
+
 def configure_callbacks(save_every=1, tensorboard_vis=False):
     # checkpoint models only when `val_loss` impoves
     saver = keras.callbacks.ModelCheckpoint(
-        'models/ckpts/fresmodel.ckpt',
+        'models/ckpts/x2_model.ckpt',
         monitor='val_loss',
         save_best_only=True,
         period=save_every,
         verbose=1
     )
-    
+
     # reduce LR when `val_loss` plateaus
     reduce_lr = keras.callbacks.ReduceLROnPlateau(
         monitor='val_loss',
@@ -139,9 +145,9 @@ def configure_callbacks(save_every=1, tensorboard_vis=False):
 
     # early stopping when `val_loss` stops improving
     early_stopper = keras.callbacks.EarlyStopping(
-        monitor='val_loss', 
-        min_delta=0, 
-        patience=15, 
+        monitor='val_loss',
+        min_delta=0,
+        patience=15,
         verbose=1
     )
 
@@ -155,8 +161,9 @@ def configure_callbacks(save_every=1, tensorboard_vis=False):
             write_images=True
         )
         callbacks.append(tensorboard_cb)
-    
+
     return callbacks
+
 
 def setup_paths():
     if not os.path.isdir('models/ckpts'):
@@ -164,10 +171,11 @@ def setup_paths():
             os.mkdir('models')
         os.mkdir('models/ckpts')
 
+
 def main():
     LOG_FORMAT = '%(levelname)s %(message)s'
     logging.basicConfig(
-        format=LOG_FORMAT, 
+        format=LOG_FORMAT,
         level='INFO'
     )
 
@@ -175,6 +183,7 @@ def main():
         train()
     except KeyboardInterrupt:
         print('EXIT')
+
 
 if __name__ == '__main__':
     main()
