@@ -6,7 +6,18 @@ import numpy as np
 import matplotlib.pyplot as plt 
 
 def main():
-    resnet50 = keras.models.load_model('models/resnet50.h5')
+    dependencies = {'class_name': 'Precision', 
+    'config': 
+    {'name': keras.metrics.Precision(),
+     'dtype': 'float32',
+      'thresholds': None, 
+      'top_k': None,
+       'class_id': None}}
+
+
+
+    resnet50 = keras.models.load_model(
+    'models/resnet_bce.h5', custom_objects=dependencies)
     make_prediction(resnet50)
 
 
@@ -17,9 +28,9 @@ Make Prediction [using pre-trained model]
 def make_prediction(model):
 
 
-    categories = os.listdir('/itet-stor/himeva/net_scratch/resnet_data/test/')
+    categories = os.listdir('/itet-stor/himeva/net_scratch/final_data_2/fullres/test/')
 
-    file_path = "/itet-stor/himeva/net_scratch/resnet_data/test/"
+    file_path = "/itet-stor/himeva/net_scratch/final_data_2/fullres/test/"
     normal_imgs= os.listdir(file_path + "normal/")
     lesion_imgs = os.listdir(file_path + "lesion/")
     accs= []
